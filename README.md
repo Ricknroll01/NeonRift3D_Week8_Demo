@@ -46,6 +46,6 @@ Change player movement speed from `7f` to `8.5f`.
 During the collaboration demonstration, both students may
 intentionally modify the following line differently:
 
-Game objective: Defeat 10 enemies.
+Game objective: Defeat 20 enemies.
 
 This will be used to demonstrate a simple merge conflict.
