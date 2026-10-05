@@ -46,7 +46,7 @@ public partial class StrikerEnemy3D : Enemy3D
 		{
 			RequestShot(direction);
 
-			_shootTimer = 1.6f;
+			_shootTimer = 1.2f;
 		}
 	}
 }
