@@ -12,7 +12,7 @@ public partial class Player3D : CharacterBody3D
 	public delegate void DiedEventHandler();
 
 	private const float MaxHealth = 100f;
-	private const float MoveSpeed = 7f;
+	private const float MoveSpeed = 10f;
 	private const float FireRate = 5f;
 
 	private float _fireCooldown;
