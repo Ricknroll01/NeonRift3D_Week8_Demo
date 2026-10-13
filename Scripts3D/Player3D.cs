@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class Player3D : CharacterBody3D
+public partial class Player3D : CharacterBody3D, IDamageable
 {
 	[Signal]
 	public delegate void ShotRequestedEventHandler(

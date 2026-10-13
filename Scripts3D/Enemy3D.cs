@@ -2,7 +2,7 @@ using Godot;
 using System;
 
 public abstract partial class Enemy3D
-	: CharacterBody3D
+	: CharacterBody3D, IDamageable
 {
 	[Signal]
 	public delegate void DestroyedEventHandler(

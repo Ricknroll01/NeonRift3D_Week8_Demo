@@ -8,8 +8,6 @@ public partial class Bullet3D
 	private const uint EnemyLayer = 2u;
 	private const uint WorldLayer = 8u;
 
-	private bool _hostile;
-
 	private float _damage;
 
 	private float _life;
@@ -20,7 +18,6 @@ public partial class Bullet3D
 		float damage,
 		bool hostile)
 	{
-		_hostile = hostile;
 
 		_damage = damage;
 
@@ -65,15 +62,9 @@ public partial class Bullet3D
 		GodotObject collider =
 			collision.GetCollider();
 
-		if (_hostile
-			&& collider is Player3D player)
+		if (collider is IDamageable target)
 		{
-			player.TakeDamage(_damage);
-		}
-		else if (!_hostile
-			&& collider is Enemy3D enemy)
-		{
-			enemy.TakeDamage(_damage);
+			target.TakeDamage(_damage);
 		}
 
 		QueueFree();
