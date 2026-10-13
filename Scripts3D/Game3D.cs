@@ -9,6 +9,7 @@ public partial class Game3D : Node3D
 		new();
 
 	private PackedScene _chaserScene = null!;
+	private PackedScene _heavyChaserScene = null!;
 
 	private PackedScene _strikerScene = null!;
 
@@ -29,7 +30,7 @@ public partial class Game3D : Node3D
 	public override void _Ready()
 	{
 		Engine.TimeScale = 1.0;
-		
+
 		_rng.Randomize();
 
 		_chaserScene =
@@ -39,6 +40,10 @@ public partial class Game3D : Node3D
 		_strikerScene =
 			GD.Load<PackedScene>(
 				"res://Scenes3D/StrikerEnemy3D.tscn");
+
+		_heavyChaserScene =
+			GD.Load<PackedScene>(
+				"res://Scenes3D/HeavyChaserEnemy3D.tscn");
 
 		_bulletScene =
 			GD.Load<PackedScene>(
@@ -99,10 +104,20 @@ public partial class Game3D : Node3D
 
 	private void SpawnEnemy()
 	{
-		PackedScene selectedScene =
-			_kills < 4
-				? _chaserScene
-				: _strikerScene;
+		PackedScene selectedScene;
+
+		if (_kills < 3)
+		{
+			selectedScene = _chaserScene;
+		}
+		else if (_kills < 6)
+		{
+			selectedScene = _heavyChaserScene;
+		}
+		else
+		{
+			selectedScene = _strikerScene;
+		}
 
 		Enemy3D enemy =
 			selectedScene.Instantiate<Enemy3D>();
