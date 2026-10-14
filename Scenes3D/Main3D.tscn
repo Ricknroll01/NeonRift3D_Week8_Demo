@@ -98,6 +98,7 @@ shape = SubResource("BoxShape3D_f7vvs")
 
 [node name="Player" parent="." unique_id=121266100 instance=ExtResource("1_aw62g")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+collision_mask = 9
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=658675900]
 transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 14, 14)
