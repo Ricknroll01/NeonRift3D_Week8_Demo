@@ -18,6 +18,9 @@ public partial class Player3D : CharacterBody3D, IDamageable
 	private float _fireCooldown;
 	private float _invulnerable;
 
+	private float _speedMultiplier = 1f;
+	private float _speedBoostTime = 0f;
+
 	private Vector3 _aimDirection = Vector3.Forward;
 
 	private Vector2 _mousePosition;
@@ -72,7 +75,7 @@ public partial class Player3D : CharacterBody3D, IDamageable
 			0f,
 			input.Y);
 
-		Velocity = movement * MoveSpeed;
+		Velocity = movement * MoveSpeed * _speedMultiplier;
 
 		MoveAndSlide();
 
@@ -83,6 +86,21 @@ public partial class Player3D : CharacterBody3D, IDamageable
 		{
 			Fire();
 		}
+
+
+		// Count down speed boost time if active
+		if (_speedBoostTime > 0f)
+		{
+			_speedBoostTime -= (float)delta;
+
+			if (_speedBoostTime <= 0f)
+			{
+				_speedBoostTime = 0f;
+				_speedMultiplier = 1f;
+				GD.Print("Speed boost expired!");
+			}
+		}
+
 	}
 
 	private void AimAtMouse()
@@ -161,6 +179,7 @@ public partial class Player3D : CharacterBody3D, IDamageable
 		Health = Math.Max(
 			0f,
 			Health - damage);
+		GD.Print($"Current HP: {Health}");
 
 		_invulnerable = 0.6f;
 
@@ -173,6 +192,27 @@ public partial class Player3D : CharacterBody3D, IDamageable
 				SignalName.Died);
 		}
 	}
+
+
+	public void Heal(float amount)
+	{
+		if (!Active || amount <= 0f)
+			return;
+
+		Health = Math.Min(100f, Health + amount);
+		GD.Print($"Current HP: {Health}");
+	}
+
+	public void ApplySpeedBoost(float multiplier, float duration)
+	{
+		if (!Active || multiplier <= 0f || duration <= 0f)
+			return;
+
+		_speedMultiplier = multiplier;
+		_speedBoostTime = duration;
+	}
+
+
 
 	public void ResetPlayer(Vector3 position)
 	{

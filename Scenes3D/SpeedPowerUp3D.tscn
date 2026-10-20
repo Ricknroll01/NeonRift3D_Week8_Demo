@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://bimqc4t8kitu5"]
+
+[ext_resource type="Script" uid="uid://v87faaf2t3we" path="res://Scripts3D/SpeedPowerUp3D.cs" id="1_horaw"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ypjuo"]
+albedo_color = Color(1, 0.5686275, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_6fas1"]
+material = SubResource("StandardMaterial3D_ypjuo")
+radius = 0.3
+height = 0.6
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_0bqvt"]
+radius = 0.3
+
+[node name="SpeedPowerUp3D" type="Area3D" unique_id=335062377]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+collision_layer = 16
+script = ExtResource("1_horaw")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1320862755]
+mesh = SubResource("SphereMesh_6fas1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=431891059]
+shape = SubResource("SphereShape3D_0bqvt")

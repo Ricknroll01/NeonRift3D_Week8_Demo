@@ -5,21 +5,17 @@ public partial class Game3D : Node3D
 {
 	private const int TargetKills = 10;
 
-	private readonly RandomNumberGenerator _rng =
-		new();
-
-	private PackedScene _chaserScene = null!;
-	private PackedScene _heavyChaserScene = null!;
-
-	private PackedScene _strikerScene = null!;
-
 	private PackedScene _bulletScene = null!;
 
 	private Node3D _entities = null!;
 
 	private Player3D _player = null!;
 
-	private float _spawnTimer;
+	private PowerUpSpawner3D _powerUpSpawner =
+		null!;
+
+	private EnemySpawner3D _enemySpawner =
+		null!;
 
 	private int _kills;
 
@@ -27,23 +23,10 @@ public partial class Game3D : Node3D
 
 	private bool _running;
 
+
 	public override void _Ready()
 	{
 		Engine.TimeScale = 1.0;
-
-		_rng.Randomize();
-
-		_chaserScene =
-			GD.Load<PackedScene>(
-				"res://Scenes3D/ChaserEnemy3D.tscn");
-
-		_strikerScene =
-			GD.Load<PackedScene>(
-				"res://Scenes3D/StrikerEnemy3D.tscn");
-
-		_heavyChaserScene =
-			GD.Load<PackedScene>(
-				"res://Scenes3D/HeavyChaserEnemy3D.tscn");
 
 		_bulletScene =
 			GD.Load<PackedScene>(
@@ -55,6 +38,20 @@ public partial class Game3D : Node3D
 		_player =
 			GetNode<Player3D>("Player");
 
+		_powerUpSpawner =
+			GetNode<PowerUpSpawner3D>(
+				"PowerUpSpawner3D");
+
+		_enemySpawner =
+			GetNode<EnemySpawner3D>(
+				"EnemySpawner3D");
+
+		_enemySpawner.Configure(
+			_player,
+			_entities,
+			OnEnemyDestroyed,
+			SpawnEnemyBullet);
+
 		_player.ShotRequested +=
 			SpawnPlayerBullet;
 
@@ -63,6 +60,7 @@ public partial class Game3D : Node3D
 
 		StartGame();
 	}
+
 
 	public override void _PhysicsProcess(
 		double deltaValue)
@@ -76,15 +74,11 @@ public partial class Game3D : Node3D
 			(float)deltaValue,
 			0.033f);
 
-		_spawnTimer -= delta;
-
-		if (_spawnTimer <= 0f)
-		{
-			SpawnEnemy();
-
-			_spawnTimer = 2.5f;
-		}
+		_enemySpawner.UpdateSpawner(
+			delta,
+			_kills);
 	}
+
 
 	private void StartGame()
 	{
@@ -94,85 +88,16 @@ public partial class Game3D : Node3D
 
 		_score = 0;
 
-		_spawnTimer = 1.5f;
-
 		_running = true;
 
 		_player.ResetPlayer(
 			new Vector3(0f, 0.5f, 0f));
+
+		_enemySpawner.StartSpawning();
+
+		_powerUpSpawner.StartSpawning();
 	}
 
-	private void SpawnEnemy()
-	{
-		PackedScene selectedScene;
-
-		if (_kills < 3)
-		{
-			selectedScene = _chaserScene;
-		}
-		else if (_kills < 6)
-		{
-			selectedScene = _heavyChaserScene;
-		}
-		else
-		{
-			selectedScene = _strikerScene;
-		}
-
-		Enemy3D enemy =
-			selectedScene.Instantiate<Enemy3D>();
-
-		_entities.AddChild(enemy);
-
-		enemy.GlobalPosition =
-			RandomArenaEdgePosition();
-
-		enemy.Configure(_player);
-
-		enemy.Destroyed +=
-			OnEnemyDestroyed;
-
-		enemy.ShotRequested +=
-			SpawnEnemyBullet;
-	}
-
-	private Vector3 RandomArenaEdgePosition()
-	{
-		const float MaxX = 8.5f;
-		const float MaxZ = 5.5f;
-
-		int side =
-			_rng.RandiRange(0, 3);
-
-		if (side == 0)
-		{
-			return new Vector3(
-				_rng.RandfRange(-MaxX, MaxX),
-				0.5f,
-				-MaxZ);
-		}
-
-		if (side == 1)
-		{
-			return new Vector3(
-				MaxX,
-				0.5f,
-				_rng.RandfRange(-MaxZ, MaxZ));
-		}
-
-		if (side == 2)
-		{
-			return new Vector3(
-				_rng.RandfRange(-MaxX, MaxX),
-				0.5f,
-				MaxZ);
-		}
-
-		return new Vector3(
-			-MaxX,
-			0.5f,
-			_rng.RandfRange(-MaxZ, MaxZ));
-	}
 
 	private void SpawnPlayerBullet(
 		Vector3 position,
@@ -186,6 +111,7 @@ public partial class Game3D : Node3D
 			24f);
 	}
 
+
 	private void SpawnEnemyBullet(
 		Vector3 position,
 		Vector3 direction)
@@ -197,6 +123,7 @@ public partial class Game3D : Node3D
 			8f,
 			11f);
 	}
+
 
 	private void SpawnBullet(
 		Vector3 position,
@@ -220,7 +147,9 @@ public partial class Game3D : Node3D
 			hostile);
 	}
 
-	private void OnEnemyDestroyed(int points)
+
+	private void OnEnemyDestroyed(
+		int points)
 	{
 		if (!_running)
 		{
@@ -241,9 +170,14 @@ public partial class Game3D : Node3D
 
 			_player.Active = false;
 
+			_enemySpawner.StopSpawning();
+
+			_powerUpSpawner.StopSpawning();
+
 			GD.Print("VICTORY");
 		}
 	}
+
 
 	private void EndWithDefeat()
 	{
@@ -254,8 +188,13 @@ public partial class Game3D : Node3D
 
 		_running = false;
 
+		_enemySpawner.StopSpawning();
+
+		_powerUpSpawner.StopSpawning();
+
 		GD.Print("GAME OVER");
 	}
+
 
 	private void ClearEntities()
 	{

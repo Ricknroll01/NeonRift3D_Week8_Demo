@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://cyifs2lgdepwr"]
+
+[ext_resource type="Script" uid="uid://cr2s1nkrbdp34" path="res://Scripts3D/HealPowerUp3D.cs" id="1_pyrdl"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ypjuo"]
+albedo_color = Color(0, 1, 0.62352943, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_6fas1"]
+material = SubResource("StandardMaterial3D_ypjuo")
+radius = 0.3
+height = 0.6
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_0bqvt"]
+radius = 0.3
+
+[node name="HealPowerUp3D" type="Area3D" unique_id=1452112566]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+collision_layer = 16
+script = ExtResource("1_pyrdl")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1320862755]
+mesh = SubResource("SphereMesh_6fas1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=431891059]
+shape = SubResource("SphereShape3D_0bqvt")
